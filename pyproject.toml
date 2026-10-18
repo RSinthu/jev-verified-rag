@@ -1,0 +1,26 @@
+[project]
+name = "jev-verified-rag-fastapi"
+version = "0.1.0"
+description = "FastAPI RAG app with document upload, hybrid search (FAISS + BM25), Jev chunk scoring and prompt-injection detection."
+readme = "README.md"
+authors = [
+    { name = "RSinthu", email = "sinthujanp2135@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "faiss-cpu>=1.15.1",
+    "fastapi>=0.146.0",
+    "jinja2>=3.1.6",
+    "langchain-community>=0.4.2",
+    "langchain-core>=1.6.12",
+    "langchain-huggingface>=1.2.3",
+    "langchain-openai>=1.7.2",
+    "langchain-text-splitters>=1.1.3",
+    "pypdf>=6.21.1",
+    "python-dotenv>=1.2.4",
+    "python-multipart>=0.0.32",
+    "rank-bm25>=0.2.2",
+    "sentence-transformers>=6.1.0",
+    "typesafe-sdk>=0.7.5",
+    "uvicorn[standard]>=0.54.0",
+]
