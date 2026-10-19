@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jev Verified RAG</title>
+  <meta name="description" content="Upload documents and get answers checked by Jev.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23534ab7'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11.5' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body data-tau="{{ tau }}">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M6 12.5l4 4L18 8"/></svg>
+      </span>
+      <div>
+        <h1>Jev Verified RAG</h1>
+        <p>Answers from your documents, checked by Jev</p>
+      </div>
+    </div>
+    <div class="topbar-stats">
+      <span class="pill" title="Jev cutoff: passages and gates need p ≥ τ">τ = {{ tau }}</span>
+      <span class="pill" id="doc-count">0 documents</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <section class="card">
+        <h2>Upload documents</h2>
+        <label class="dropzone" id="dropzone" tabindex="0">
+          <input type="file" id="file-input" multiple accept="{{ extensions | join(',') }}" hidden>
+          <svg class="dropzone-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5l5 5M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+          <span class="dropzone-title">Drop files here or <u>browse</u></span>
+          <span class="dropzone-hint">{{ extensions | join(' ') | upper | replace('.', '') }} · up to {{ max_upload_mb }} MB each</span>
+          <span class="dropzone-busy"><span class="spinner"></span>Indexing…</span>
+        </label>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Documents</h2>
+          <button type="button" class="btn-ghost danger" id="clear-btn" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12M9 7V4h6v3"/></svg>
+            Clear all
+          </button>
+        </div>
+        <ul class="doc-list" id="doc-list"></ul>
+        <p class="empty" id="doc-empty">No documents yet. Upload a file to start.</p>
+      </section>
+
+      <section class="card how">
+        <h2>How it works</h2>
+        <ol>
+          <li><b>Search</b> finds the 20 best chunks (meaning + keywords).</li>
+          <li><b>Jev</b> scores every chunk in one request.</li>
+          <li><b>Gates</b> stop off-topic questions and prompt injections.</li>
+          <li><b>OpenAI</b> answers from the kept chunks only.</li>
+        </ol>
+      </section>
+    </aside>
+
+    <main class="main">
+      <form class="ask" id="ask-form">
+        <label for="question" class="sr-only">Your question</label>
+        <textarea id="question" rows="1" maxlength="2000" placeholder="Ask about your documents…" required></textarea>
+        <button type="submit" class="btn-primary" id="ask-btn">
+          <span>Ask</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0l-6-6m6 6l-6 6"/></svg>
+        </button>
+      </form>
+      <p class="ask-hint">Press <kbd>Enter</kbd> to ask, <kbd>Shift</kbd> + <kbd>Enter</kbd> for a new line.</p>
+
+      <div id="results" aria-live="polite"></div>
+
+      <div class="welcome" id="welcome">
+        <h2>Ask anything about your files</h2>
+        <p>Every answer shows which passages Jev kept, how confident it was, and why a question was refused.</p>
+        <div class="legend">
+          <span class="badge answered">Answered</span>
+          <span class="badge not_in_docs">Not in the docs</span>
+          <span class="badge injection">Blocked: prompt injection</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <!-- Markdown, HTML sanitizer and math rendering for answers (plain text is used if these fail to load) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

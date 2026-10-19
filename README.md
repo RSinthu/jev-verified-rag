@@ -8,7 +8,7 @@ You upload your own `.pdf`, `.md` or `.txt` files in the browser and ask a quest
 - whether the question can be answered from them at all
 - whether a document is trying to attack the AI
 
-> **Status:** the configuration (`config.py`), RAG pipeline (`rag.py`) and FastAPI backend (`app.py`) are written. The frontend (`templates/index.html`, `static/`) is next. Sections marked *(planned)* describe how it will work.
+> **Status:** all parts are written: configuration (`config.py`), RAG pipeline (`rag.py`), FastAPI backend (`app.py`) and the web frontend (`templates/`, `static/`).
 
 ---
 
@@ -28,7 +28,7 @@ You upload your own `.pdf`, `.md` or `.txt` files in the browser and ask a quest
   10. [The big picture](#10-the-big-picture)
   11. [Step by step](#11-step-by-step)
   12. [Why Jev makes this RAG better](#12-why-jev-makes-this-rag-better)
-  13. [Request flow (planned)](#13-request-flow-planned)
+  13. [Request flow](#13-request-flow)
   14. [Project structure](#14-project-structure)
   15. [Setup and run](#15-setup-and-run)
   16. [Tuning](#16-tuning)
@@ -364,7 +364,7 @@ Here is the same pipeline as a detailed diagram:
 
 In short: **Jev makes the quick yes/no decisions, and the LLM is used only to write the answer.**
 
-## 13. Request flow *(planned)*
+## 13. Request flow
 
 ```mermaid
 sequenceDiagram
