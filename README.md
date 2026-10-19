@@ -8,7 +8,7 @@ You upload your own `.pdf`, `.md` or `.txt` files in the browser and ask a quest
 - whether the question can be answered from them at all
 - whether a document is trying to attack the AI
 
-> **Status:** the configuration (`config.py`) and RAG pipeline (`rag.py`) are written. The FastAPI routes (`app.py`) and the frontend are next. Sections marked *(planned)* describe how they will work.
+> **Status:** the configuration (`config.py`), RAG pipeline (`rag.py`) and FastAPI backend (`app.py`) are written. The frontend (`templates/index.html`, `static/`) is next. Sections marked *(planned)* describe how it will work.
 
 ---
 
@@ -398,7 +398,7 @@ sequenceDiagram
     UI-->>User: Answer + score bars + gate badges
 ```
 
-**API endpoints (planned):**
+**API endpoints:**
 
 | Method | Route | Purpose |
 |---|---|---|
