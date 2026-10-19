@@ -414,6 +414,7 @@ sequenceDiagram
 ```
 jev-verified-rag-fastapi/
 ├── app.py                  # FastAPI routes (upload, ask, documents, health)
+├── config.py               # settings (pydantic-settings + .env), logger, shared clients
 ├── rag.py                  # RAG engine: load, chunk, index, hybrid search, Jev, answer
 ├── templates/
 │   └── index.html          # web page
@@ -459,13 +460,17 @@ Then open http://127.0.0.1:8000. The first start takes about a minute while the 
 
 ## 16. Tuning
 
-| I want to… | Change |
+Settings are defined in the `Settings` class in `config.py` (built with **pydantic-settings**). You can override any of them in `.env` without touching the code, for example `TAU=0.3`. Wrong values are rejected at startup. For example, `TAU` must be between 0 and 1.
+
+| I want to… | Set in `.env` |
 |---|---|
-| Keep more chunks | Lower `TAU` (e.g. `0.3`) in `rag.py` |
+| Keep more chunks | Lower `TAU` (e.g. `0.3`) |
 | Be stricter | Raise `TAU` (e.g. `0.7`) |
-| Use bigger or smaller chunks | `chunk_size` / `chunk_overlap` in `rag.py` |
-| Get more search candidates | `k=20` in the FAISS and BM25 searches |
-| Use a cheaper answer model | The `ChatOpenAI(model=...)` line in `rag.py` |
+| Use bigger or smaller chunks | `CHUNK_SIZE` / `CHUNK_OVERLAP` |
+| Get more search candidates | `TOP_K` |
+| Allow bigger uploads | `MAX_UPLOAD_MB` |
+| Use a cheaper answer model | `OPENAI_MODEL` |
+| See more detailed logs | `LOG_LEVEL=DEBUG` |
 
 ---
 

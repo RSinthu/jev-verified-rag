@@ -23,5 +23,5 @@ rank-bm25==0.2.2
 typesafe-sdk==0.7.5
 
 # Utilities
-python-dotenv==1.2.4
+pydantic-settings==2.16.0
 pypdf==6.21.1
