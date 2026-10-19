@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent
 
 # Paths
 UPLOAD_DIR = BASE_DIR / "uploads"
-VECTOR_STORE_DIR = BASE_DIR / "data" / "vector_store"
+UPLOAD_DIR.mkdir(exist_ok=True)  # git-ignored, so missing after a fresh clone
 TEMPLATES_DIR = BASE_DIR / "templates"
 STATIC_DIR = BASE_DIR / "static"
 

@@ -19,9 +19,6 @@ env/
 # User-uploaded documents
 uploads/*
 
-# Saved vector indexes
-data/vector_store/*
-
 # Hugging Face / model caches
 .cache/
 models/

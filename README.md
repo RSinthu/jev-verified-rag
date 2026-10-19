@@ -8,7 +8,7 @@ You upload your own `.pdf`, `.md` or `.txt` files in the browser and ask a quest
 - whether the question can be answered from them at all
 - whether a document is trying to attack the AI
 
-> **Status:** the project skeleton and dependencies are set up. The application code (`app.py`, `rag.py`, frontend) is being written next. Sections marked *(planned)* describe how it will work.
+> **Status:** the configuration (`config.py`) and RAG pipeline (`rag.py`) are written. The FastAPI routes (`app.py`) and the frontend are next. Sections marked *(planned)* describe how they will work.
 
 ---
 
@@ -315,7 +315,7 @@ Here is the same pipeline as a detailed diagram:
 
 ### Upload and indexing *(runs when you upload files)*
 
-1. **Upload.** You drop files on the web page. FastAPI checks each file's type and size and saves it to `uploads/`.
+1. **Upload.** You drop files on the web page. FastAPI checks each file's type and size and saves it to `uploads/`. The indexes are kept in memory, and when the app restarts they are rebuilt from the files in `uploads/`.
 2. **Load.** PDFs are read page by page. Markdown and text files are read as plain text.
 3. **Chunk.** Each document is cut into pieces of about 500 characters. Neighbouring chunks share 50 characters, so a sentence isn't lost where the text is cut.
 4. **Index twice.**
@@ -422,7 +422,6 @@ jev-verified-rag-fastapi/
 │   ├── app.js              # upload, ask, render answer and score bars
 │   └── style.css
 ├── uploads/                # uploaded files (git-ignored)
-├── data/vector_store/      # saved FAISS index (git-ignored)
 ├── docs/images/            # README diagrams
 ├── .env.example            # API key template
 ├── pyproject.toml / uv.lock

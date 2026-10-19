@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 1230" width="680" height="1230" role="img">
+  <title>RAG pipeline with Jev relevance and safety scoring</title>
+  <desc>Indexing: uploaded documents are chunked, embedded into FAISS and indexed in BM25. Per question: hybrid search with reciprocal rank fusion gives 20 candidates, Jev scores them in one request with 22 yes/no questions, chunks with p at least 0.5 are kept, gates check answerability and injection, then OpenAI writes a grounded answer shown in the FastAPI web page.</desc>
+  <style>
+    text { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .section { fill: none; stroke: #c9c9c4; stroke-width: 1; stroke-dasharray: 5 4; }
+    .section-title { font-size: 14px; font-weight: 600; fill: #1f1f1d; }
+    .title { font-size: 14px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+    .sub { font-size: 12px; text-anchor: middle; dominant-baseline: central; }
+    .label { font-size: 12px; fill: #52514e; }
+    .arrow { fill: none; stroke: #898781; stroke-width: 1.5; marker-end: url(#arrow); }
+    .dashed { stroke-dasharray: 4 4; }
+    .green rect, rect.green { fill: #eaf3de; stroke: #3b6d11; }
+    .green .title { fill: #27500a; } .green .sub { fill: #3b6d11; }
+    .blue rect, rect.blue { fill: #e6f1fb; stroke: #185fa5; }
+    .blue .title { fill: #0c447c; } .blue .sub { fill: #185fa5; }
+    .purple rect, .purple polygon { fill: #eeedfe; stroke: #534ab7; }
+    .purple .title { fill: #3c3489; } .purple .sub { fill: #534ab7; }
+    .amber rect, .amber polygon { fill: #faeeda; stroke: #ba7517; }
+    .amber .title { fill: #633806; } .amber .sub { fill: #854f0b; }
+    .gray rect { fill: #f1efe8; stroke: #5f5e5a; }
+    .gray .title { fill: #444441; } .gray .sub { fill: #5f5e5a; }
+    .red rect { fill: #fcebeb; stroke: #a32d2d; }
+    .red .title { fill: #791f1f; } .red .sub { fill: #a32d2d; }
+    .teal rect { fill: #e1f5ee; stroke: #0f6e56; }
+    .teal .title { fill: #085041; } .teal .sub { fill: #0f6e56; }
+    rect, polygon { stroke-width: 1; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="680" height="1230" fill="#ffffff"/>
+
+  <!-- ============ Indexing ============ -->
+  <rect class="section" x="20" y="20" width="640" height="210" rx="16"/>
+  <text class="section-title" x="36" y="44">Indexing (runs when files are uploaded)</text>
+
+  <g class="green">
+    <rect x="40" y="60" width="170" height="56" rx="8"/>
+    <text class="title" x="125" y="79">Documents</text>
+    <text class="sub" x="125" y="99">uploads/ (.pdf .md .txt)</text>
+  </g>
+  <g class="green">
+    <rect x="250" y="60" width="180" height="56" rx="8"/>
+    <text class="title" x="340" y="79">Chunker</text>
+    <text class="sub" x="340" y="99">500 chars, 50 overlap</text>
+  </g>
+  <g class="green">
+    <rect x="460" y="60" width="180" height="56" rx="8"/>
+    <text class="title" x="550" y="79">Embedding encoder</text>
+    <text class="sub" x="550" y="99">all-MiniLM-L6-v2</text>
+  </g>
+  <g class="green">
+    <rect x="250" y="155" width="180" height="56" rx="8"/>
+    <text class="title" x="340" y="174">BM25 index</text>
+    <text class="sub" x="340" y="194">keywords</text>
+  </g>
+  <g class="green">
+    <rect x="460" y="155" width="180" height="56" rx="8"/>
+    <text class="title" x="550" y="174">Vector index</text>
+    <text class="sub" x="550" y="194">FAISS (meaning)</text>
+  </g>
+
+  <line class="arrow" x1="210" y1="88" x2="247" y2="88"/>
+  <line class="arrow" x1="430" y1="88" x2="457" y2="88"/>
+  <line class="arrow" x1="340" y1="116" x2="340" y2="152"/>
+  <text class="label" x="348" y="139">raw text</text>
+  <line class="arrow" x1="550" y1="116" x2="550" y2="152"/>
+  <text class="label" x="558" y="139">vectors</text>
+
+  <!-- ============ Every question ============ -->
+  <rect class="section" x="20" y="250" width="640" height="960" rx="16"/>
+  <text class="section-title" x="36" y="274">Runs for every question</text>
+
+  <g class="purple">
+    <rect x="40" y="295" width="170" height="44" rx="22"/>
+    <text class="title" x="125" y="317">Question</text>
+  </g>
+  <line class="arrow" x1="210" y1="317" x2="237" y2="317"/>
+
+  <!-- Hybrid search group -->
+  <rect x="240" y="290" width="410" height="175" rx="12" fill="none" stroke="#c9c9c4"/>
+  <text class="section-title" x="445" y="310" text-anchor="middle">Hybrid search</text>
+  <g class="blue">
+    <rect x="260" y="325" width="160" height="44" rx="8"/>
+    <text class="title" x="340" y="347">Keyword top 20</text>
+  </g>
+  <g class="blue">
+    <rect x="470" y="325" width="160" height="44" rx="8"/>
+    <text class="title" x="550" y="347">Dense top 20</text>
+  </g>
+  <g class="blue">
+    <rect x="345" y="405" width="200" height="44" rx="8"/>
+    <text class="title" x="445" y="427">Reciprocal rank fusion</text>
+  </g>
+  <line class="arrow dashed" x1="340" y1="211" x2="340" y2="322"/>
+  <line class="arrow dashed" x1="550" y1="211" x2="550" y2="322"/>
+  <path class="arrow" d="M340 369 V427 H342"/>
+  <path class="arrow" d="M550 369 V427 H548"/>
+  <line class="arrow" x1="445" y1="449" x2="445" y2="492"/>
+
+  <!-- Candidates -->
+  <rect x="40" y="495" width="600" height="80" rx="12" fill="#fbfbfa" stroke="#c9c9c4"/>
+  <text class="section-title" x="56" y="518">Top 20 candidates</text>
+  <g class="blue">
+    <rect x="150" y="533" width="56" height="28" rx="4"/><text class="sub" x="178" y="547">C1</text>
+    <rect x="218" y="533" width="56" height="28" rx="4"/><text class="sub" x="246" y="547">C2</text>
+    <rect x="286" y="533" width="56" height="28" rx="4"/><text class="sub" x="314" y="547">C3</text>
+    <rect x="354" y="533" width="56" height="28" rx="4"/><text class="sub" x="382" y="547">C4</text>
+    <text class="sub" x="440" y="547">…</text>
+    <rect x="470" y="533" width="56" height="28" rx="4"/><text class="sub" x="498" y="547">C20</text>
+  </g>
+  <line class="arrow" x1="340" y1="575" x2="340" y2="607"/>
+
+  <!-- Jev request -->
+  <g class="purple">
+    <rect x="40" y="620" width="190" height="56" rx="8"/>
+    <text class="title" x="135" y="639">State</text>
+    <text class="sub" x="135" y="659">question + 20 chunks</text>
+  </g>
+  <g class="purple">
+    <rect x="260" y="610" width="160" height="76" rx="10"/>
+    <text class="title" x="340" y="638" style="font-size:16px">Jev</text>
+    <text class="sub" x="340" y="662">one request</text>
+  </g>
+  <g class="purple">
+    <rect x="450" y="620" width="190" height="56" rx="8"/>
+    <text class="title" x="545" y="639">22 yes/no questions</text>
+    <text class="sub" x="545" y="659">20 relevance + 2 gates</text>
+  </g>
+  <line class="arrow" x1="230" y1="648" x2="257" y2="648"/>
+  <line class="arrow" x1="450" y1="648" x2="423" y2="648"/>
+
+  <line class="arrow" x1="340" y1="686" x2="340" y2="737"/>
+  <text class="label" x="348" y="716">calibrated p(yes) for each question</text>
+
+  <g class="amber">
+    <rect x="215" y="740" width="250" height="44" rx="8"/>
+    <text class="title" x="340" y="762">Keep chunks with p ≥ 0.5</text>
+  </g>
+  <line class="arrow" x1="340" y1="784" x2="340" y2="807"/>
+
+  <!-- Gates -->
+  <g class="amber">
+    <polygon points="340,810 450,865 340,920 230,865"/>
+    <text class="title" x="340" y="848">Gates pass?</text>
+    <text class="sub" x="340" y="870">answerable ≥ 0.5</text>
+    <text class="sub" x="340" y="888">injection &lt; 0.5</text>
+  </g>
+
+  <path class="arrow" d="M230 865 H130 V952"/>
+  <text class="label" x="60" y="856">No: answerable low</text>
+  <path class="arrow" d="M450 865 H550 V952"/>
+  <text class="label" x="490" y="856">No: injection high</text>
+  <line class="arrow" x1="340" y1="920" x2="340" y2="952"/>
+  <text class="label" x="348" y="941">Yes</text>
+
+  <g class="gray">
+    <rect x="40" y="955" width="180" height="56" rx="8"/>
+    <text class="title" x="130" y="974">"Not in the docs."</text>
+    <text class="sub" x="130" y="994">no LLM call, no cost</text>
+  </g>
+  <g class="red">
+    <rect x="460" y="955" width="180" height="56" rx="8"/>
+    <text class="title" x="550" y="974">Prompt injection</text>
+    <text class="sub" x="550" y="994">stop, no answer</text>
+  </g>
+  <g class="teal">
+    <rect x="240" y="955" width="200" height="56" rx="8"/>
+    <text class="title" x="340" y="974">OpenAI writes the answer</text>
+    <text class="sub" x="340" y="994">question + kept chunks only</text>
+  </g>
+
+  <line class="arrow" x1="340" y1="1011" x2="340" y2="1042"/>
+  <g class="teal">
+    <rect x="240" y="1045" width="200" height="56" rx="8"/>
+    <text class="title" x="340" y="1064">Grounded answer</text>
+    <text class="sub" x="340" y="1084">cites [C1] [C2]</text>
+  </g>
+
+  <line class="arrow" x1="340" y1="1101" x2="340" y2="1132"/>
+  <g class="purple">
+    <rect x="200" y="1135" width="280" height="56" rx="8"/>
+    <text class="title" x="340" y="1154">Web page (FastAPI + JS)</text>
+    <text class="sub" x="340" y="1174">answer + one score bar per chunk</text>
+  </g>
+</svg>
